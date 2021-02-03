@@ -4,6 +4,8 @@ require("dotenv").config({
   path: `.env.${process.env.NODE_ENV}`,
 })
 
+const PLATFORM_DELIVERABLE = "css";
+
 module.exports = {
   siteMetadata: {
     title: `Gatsby Default Starter`,
@@ -31,6 +33,40 @@ module.exports = {
         theme_color: `#663399`,
         display: `minimal-ui`,
         icon: `src/images/gatsby-icon.png`, // This path is relative to the root of the site.
+      },
+    },
+    {
+      resolve: `gatsby-source-github-api`,
+      options: {
+        // token: required by the GitHub API
+        token: process.env.GITHUB_PERSONAL_ACCESS_TOKEN,
+
+        // GraphQLquery: defaults to a search query
+        graphQLQuery: `
+          query FetchDesignTokens($owner: String!, $name: String!, $tree: String!) {
+            repository(name: $name, owner: $owner) {
+              content: object(expression: $tree) {
+                ... on Tree {
+                  entries {
+                    name
+                    object {
+                      ... on Blob {
+                        text
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          } 
+        `,
+
+        // variables: defaults to variables needed for a search query
+        variables: {
+          owner: process.env.GITHUB_REPO_OWNER,
+          name: process.env.GITHUB_REPO_NAME,
+          tree: `${process.env.GITHUB_REPO_BRANCH}:output/${PLATFORM_DELIVERABLE}`,
+        },
       },
     },
     // this (optional) plugin enables Progressive Web App + Offline functionality
