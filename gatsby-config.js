@@ -1,3 +1,9 @@
+// https://www.gatsbyjs.com/docs/how-to/local-development/environment-variables/
+// See my ".env.example" file that I included
+require("dotenv").config({
+  path: `.env.${process.env.NODE_ENV}`,
+})
+
 module.exports = {
   siteMetadata: {
     title: `Gatsby Default Starter`,
